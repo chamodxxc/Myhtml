@@ -1,5 +1,5 @@
 module.exports = {
-  tokens: "8240669472:AAHBZ9zdqZkg_o9RxQ6CEEhz1AWzNq9nuDw",  // Masukin Bot token kamu
+  tokens: "8240669472:AAHB7cabJUXOgo6hQT65FwUkAdc4qhtbsoE",  // Masukin Bot token kamu
   owners: "7330881176", // Masukin ID Telegram kamu
   port: "2008", // Masukin Port panel kamu 
   ipvps: "kyu-silence.hostingvvip.my.id" // Masukin IP vps kamu atau domain panel kamu yg asalnya ( https://AiiSigma.id ) menjadi ( http://AiiSigma.id )
