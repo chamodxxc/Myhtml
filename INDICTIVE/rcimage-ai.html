@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RcImage AI - Dark Knight</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --carbon-dark: #121212;
+            --carbon-medium: #1a1a1a;
+            --carbon-light: #2a2a2a;
+            --accent-purple: #b19cd9;
+            --accent-purple-light: #d8c8ff;
+            --accent-purple-dark: #8a6bc9;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --success: #00C851;
+            --error: #ff4444;
+            --warning: #ffaa00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--primary-black);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+            font-size: 15px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(177, 156, 217, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(216, 200, 255, 0.08) 0%, transparent 50%),
+                var(--primary-black);
+            z-index: -2;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(18, 18, 18, 0.95);
+            border-bottom: 1px solid rgba(177, 156, 217, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding: 12px 0;
+        }
+
+        .nav-container {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+            background: linear-gradient(135deg, var(--accent-purple-light), white);
+            border-radius: 6px;
+            transform: rotate(45deg);
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(45deg, white, var(--accent-purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            text-transform: uppercase;
+            font-weight: 500;
+            font-size: 12px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, white, var(--accent-purple-light));
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after,
+        .nav-menu a.active::after {
+            width: 100%;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: white;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, white, var(--accent-purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(177, 156, 217, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95em;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .input-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-purple-light);
+            box-shadow: 0 0 0 2px rgba(177, 156, 217, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-dark));
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 6px 20px rgba(139, 95, 191, 0.3);
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .btn {
+            padding: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-dark));
+            color: white;
+            box-shadow: 0 6px 20px rgba(139, 95, 191, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(177, 156, 217, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(177, 156, 217, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .footer {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+        }
+
+        .footer-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .footer-btn {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.8em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .footer-btn:hover {
+            background: var(--accent-purple);
+            color: var(--primary-black);
+        }
+
+        .status-info {
+            font-size: 0.8em;
+            color: var(--accent-purple-light);
+            font-weight: 600;
+        }
+
+        /* RcImage AI Specific Styles */
+        .mode-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 4px;
+            margin: 20px 0;
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 12px 16px;
+            text-align: center;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .mode-tab.active {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(139, 95, 191, 0.4);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(177, 156, 217, 0.3);
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+        }
+
+        .upload-area.active {
+            border-color: var(--accent-purple);
+            background: rgba(177, 156, 217, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: var(--accent-purple);
+            margin-bottom: 12px;
+        }
+
+        .text-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 15px;
+            resize: none;
+            transition: all 0.3s ease;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--accent-purple-light);
+            box-shadow: 0 0 0 2px rgba(177, 156, 217, 0.2);
+        }
+
+        .text-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .preview-container {
+            display: grid;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .preview-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .preview-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .image-placeholder {
+            width: 100%;
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+        }
+
+        .image-preview {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .loader {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--accent-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin: 16px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ADE80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #F87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .file-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .result-actions .btn {
+            flex: 1;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-dark));
+            color: white;
+            box-shadow: 0 6px 20px rgba(139, 95, 191, 0.4);
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(177, 156, 217, 0.6);
+        }
+
+        .btn-share {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-share:hover {
+            background: rgba(177, 156, 217, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Orbitron', monospace;
+            color: var(--accent-purple-light);
+        }
+
+        .section-title i {
+            color: var(--accent-purple);
+        }
+
+        .stats-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-section h3 {
+            font-family: 'Orbitron', monospace;
+            color: #fff;
+            margin: 0 0 20px 0;
+            text-align: center;
+            font-size: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-card-small {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card-small:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
+        
+        .stat-card-small .stat-label {
+            font-size: 12px;
+            color: #bbb;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card-small .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .stat-card-small .stat-progress {
+            background: rgba(0,0,0,0.3);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .stat-card-small .stat-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-purple-light));
+            border-radius: 3px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .page-title {
+                font-size: 1.6em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .footer-buttons {
+                justify-content: center;
+            }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 60px;
+                flex-direction: column;
+                background: rgba(18, 18, 18, 0.98);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                padding: 20px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                gap: 0;
+            }
+
+            .nav-menu li {
+                margin: 10px 0;
+            }
+
+            .nav-menu a {
+                display: block;
+                padding: 15px 30px;
+                font-size: 16px;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Animasi sederhana */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Icon styling */
+        .fas, .fab {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simplified Background -->
+    <div class="grid-bg"></div>
+
+    <!-- Navigation Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="/dashboard" class="logo">
+                <div class="logo-icon"></div>
+                <span class="logo-text">
+                    DARK KNIGHT
+                </span>
+            </a>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                <li><a href="/rcimage-ai"class="nav-link active">RcImage AI</a></li>
+                <li><a href="https://wa.me/6287730232643" class="nav-link">WhatsApp</a></li>
+                <li><a href="https://t.me/kyu_pedo" class="nav-link">Telegram</a></li>
+                <li><a href="/logout" class="nav-link">Logout</a></li>
+            </ul>
+            
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="card">
+            <h1 class="page-title"><i class="fas fa-robot"></i> RcImage AI</h1>
+            <div class="page-subtitle">AI Image Generator & Editor - Ciptakan dan Edit Gambar dengan Kecerdasan Buatan</div>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="card">
+            <div class="mode-tabs">
+                <div class="mode-tab active" data-mode="edit">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit Gambar</span>
+                </div>
+                <div class="mode-tab" data-mode="create">
+                    <i class="fas fa-magic"></i>
+                    <span>Ciptakan Gambar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="card">
+            <div class="stats-section">
+                <h3><i class="fas fa-chart-pie"></i> Statistik AI</h3>
+                <div class="stats-grid">
+                    <div class="stat-card-small">
+                        <div class="stat-label"><i class="fas fa-image"></i> Total Generate</div>
+                        <div class="stat-number">127</div>
+                        <div class="stat-progress">
+                            <div class="stat-progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card-small">
+                        <div class="stat-label"><i class="fas fa-edit"></i> Total Edit</div>
+                        <div class="stat-number">89</div>
+                        <div class="stat-progress">
+                            <div class="stat-progress-fill" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card-small">
+                        <div class="stat-label"><i class="fas fa-clock"></i> Waktu Rata-rata</div>
+                        <div class="stat-number">12s</div>
+                        <div class="stat-label">per gambar</div>
+                    </div>
+
+                    <div class="stat-card-small">
+                        <div class="stat-label"><i class="fas fa-star"></i> Rating AI</div>
+                        <div class="stat-number">4.8/5</div>
+                        <div class="stat-progress">
+                            <div class="stat-progress-fill" style="width: 96%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="card">
+            <div class="section-title">
+                <i class="fas fa-cog"></i>
+                <span id="modeTitle">Edit Gambar</span>
+            </div>
+
+            <form id="aiForm">
+                <div id="uploadSection">
+                    <div class="upload-area" id="dropZone">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p style="font-weight: 600; margin-bottom: 8px;">Upload Gambar</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Tarik & lepas atau ketuk untuk memilih</p>
+                        <p class="file-info" id="fileInfo">Format: JPG, PNG, WebP (Maks. 5MB)</p>
+                        <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <div class="section-title">
+                        <i class="fas fa-comment-alt"></i>
+                        <span id="promptLabel">Instruksi AI</span>
+                    </div>
+                    <textarea 
+                        id="promptInput" 
+                        class="text-input" 
+                        rows="4" 
+                        placeholder="Jelaskan apa yang ingin Anda buat atau edit..."
+                    ></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" id="generateBtn" class="btn btn-primary" disabled>
+                        <i class="fas fa-play"></i>
+                        <span id="buttonText">Proses Sekarang</span>
+                        <div id="buttonLoader" class="loader hidden"></div>
+                    </button>
+                    <button type="button" id="clearBtn" class="btn btn-secondary">
+                        <i class="fas fa-broom"></i>
+                        <span>Clear</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        <div class="card">
+            <div class="section-title">
+                <i class="fas fa-star"></i>
+                <span>Hasil AI</span>
+            </div>
+
+            <div class="preview-container">
+                <div id="inputPreview" class="preview-card">
+                    <div class="preview-label">Gambar Awal</div>
+                    <div class="image-placeholder">
+                        <i class="fas fa-image" style="font-size: 32px; margin-bottom: 8px;"></i>
+                        <div>Belum ada gambar</div>
+                    </div>
+                </div>
+
+                <div id="outputPreview" class="preview-card">
+                    <div class="preview-label">Hasil AI</div>
+                    <div class="image-placeholder" id="resultPlaceholder">
+                        <i class="fas fa-robot" style="font-size: 32px; margin-bottom: 8px;"></i>
+                        <div>Hasil akan muncul di sini</div>
+                    </div>
+                    <img id="resultImage" class="image-preview hidden">
+                </div>
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <div id="downloadSection" class="hidden">
+                <div class="result-actions">
+                    <button id="downloadBtn" class="btn btn-download">
+                        <i class="fas fa-download"></i>
+                        <span>Download</span>
+                    </button>
+                    <button id="shareBtn" class="btn btn-share">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-buttons">
+                <a href="/dashboard" class="footer-btn"><i class="fas fa-arrow-left"></i> Back</a>
+                <a href="/logout" class="footer-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <div class="status-info">
+                <i class="fas fa-circle" style="color: var(--success)"></i> AI System Ready
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/rcimage-ai';
+        
+        let currentMode = 'edit';
+        let uploadedImage = null;
+        let currentResultUrl = null;
+
+        const elements = {
+            modeTabs: document.querySelectorAll('.mode-tab'),
+            modeTitle: document.getElementById('modeTitle'),
+            promptLabel: document.getElementById('promptLabel'),
+            uploadSection: document.getElementById('uploadSection'),
+            dropZone: document.getElementById('dropZone'),
+            fileInput: document.getElementById('fileInput'),
+            fileInfo: document.getElementById('fileInfo'),
+            promptInput: document.getElementById('promptInput'),
+            generateBtn: document.getElementById('generateBtn'),
+            clearBtn: document.getElementById('clearBtn'),
+            buttonText: document.getElementById('buttonText'),
+            buttonLoader: document.getElementById('buttonLoader'),
+            inputPreview: document.getElementById('inputPreview'),
+            outputPreview: document.getElementById('outputPreview'),
+            resultPlaceholder: document.getElementById('resultPlaceholder'),
+            resultImage: document.getElementById('resultImage'),
+            messageContainer: document.getElementById('messageContainer'),
+            downloadSection: document.getElementById('downloadSection'),
+            downloadBtn: document.getElementById('downloadBtn'),
+            shareBtn: document.getElementById('shareBtn'),
+            aiForm: document.getElementById('aiForm')
+        };
+
+        function showMessage(text, type = 'error') {
+            elements.messageContainer.innerHTML = `
+                <div class="message ${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                    ${text}
+                </div>
+            `;
+        }
+
+        function clearMessage() {
+            elements.messageContainer.innerHTML = '';
+        }
+
+        function updateButtonState() {
+            const hasPrompt = elements.promptInput.value.trim().length > 0;
+            if (currentMode === 'edit') {
+                elements.generateBtn.disabled = !(uploadedImage && hasPrompt);
+            } else {
+                elements.generateBtn.disabled = !hasPrompt;
+            }
+        }
+
+        function handleFileSelect(file) {
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showMessage('File harus berupa gambar');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showMessage('Ukuran file terlalu besar (maksimal 5MB)');
+                return;
+            }
+
+            elements.fileInfo.textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImage = e.target.result;
+                elements.inputPreview.innerHTML = `
+                    <div class="preview-label">Gambar Awal</div>
+                    <img src="${e.target.result}" class="image-preview">
+                `;
+                updateButtonState();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            elements.modeTabs.forEach(tab => {
+                if (tab.dataset.mode === mode) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            if (mode === 'edit') {
+                elements.modeTitle.textContent = 'Edit Gambar';
+                elements.promptLabel.textContent = 'Instruksi AI';
+                elements.buttonText.textContent = 'Proses Sekarang';
+                elements.uploadSection.classList.remove('hidden');
+                elements.inputPreview.classList.remove('hidden');
+            } else {
+                elements.modeTitle.textContent = 'Ciptakan Gambar';
+                elements.promptLabel.textContent = 'Deskripsi Gambar';
+                elements.buttonText.textContent = 'Generate Sekarang';
+                elements.uploadSection.classList.add('hidden');
+                elements.inputPreview.classList.add('hidden');
+                uploadedImage = null;
+            }
+
+            clearMessage();
+            elements.downloadSection.classList.add('hidden');
+            elements.resultImage.classList.add('hidden');
+            elements.resultPlaceholder.classList.remove('hidden');
+            updateButtonState();
+        }
+
+        async function processGeneration() {
+            const prompt = elements.promptInput.value.trim();
+            
+            if (!prompt) {
+                showMessage('Harap masukkan prompt terlebih dahulu');
+                return;
+            }
+
+            if (currentMode === 'edit' && !uploadedImage) {
+                showMessage('Harap pilih gambar terlebih dahulu');
+                return;
+            }
+
+            elements.generateBtn.disabled = true;
+            elements.buttonText.textContent = 'Memproses...';
+            elements.buttonLoader.classList.remove('hidden');
+            clearMessage();
+
+            elements.resultImage.classList.add('hidden');
+            elements.resultPlaceholder.innerHTML = `
+                <div class="loader" style="width: 40px; height: 40px; margin-bottom: 16px;"></div>
+                <div>AI sedang bekerja...</div>
+            `;
+            elements.resultPlaceholder.classList.remove('hidden');
+            elements.downloadSection.classList.add('hidden');
+
+            try {
+                const requestData = {
+                    prompt: prompt,
+                    imageUrl: currentMode === 'edit' ? uploadedImage : null
+                };
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Error: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.image_url) {
+                    currentResultUrl = result.image_url;
+                    elements.resultImage.src = result.image_url;
+                    elements.resultImage.classList.remove('hidden');
+                    elements.resultPlaceholder.classList.add('hidden');
+                    elements.downloadSection.classList.remove('hidden');
+                    showMessage('Gambar berhasil dibuat!', 'success');
+                } else {
+                    throw new Error('Tidak ada gambar yang dihasilkan');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                elements.resultPlaceholder.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 8px; color: #F87171;"></i>
+                    <div>Gagal memproses</div>
+                `;
+                showMessage(error.message);
+            } finally {
+                elements.generateBtn.disabled = false;
+                elements.buttonText.textContent = currentMode === 'edit' ? 'Proses Sekarang' : 'Generate Sekarang';
+                elements.buttonLoader.classList.add('hidden');
+            }
+        }
+
+        function downloadImage() {
+            if (!currentResultUrl) return;
+            
+            const link = document.createElement('a');
+            link.href = currentResultUrl;
+            link.download = `rcimage-${Date.now()}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function shareImage() {
+            if (!currentResultUrl) return;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'RcImage AI Result',
+                    url: currentResultUrl
+                });
+            } else {
+                navigator.clipboard.writeText(currentResultUrl).then(() => {
+                    showMessage('Link disalin ke clipboard!', 'success');
+                });
+            }
+        }
+
+        function clearAll() {
+            elements.fileInput.value = '';
+            elements.promptInput.value = '';
+            uploadedImage = null;
+            currentResultUrl = null;
+            
+            elements.inputPreview.innerHTML = `
+                <div class="preview-label">Gambar Awal</div>
+                <div class="image-placeholder">
+                    <i class="fas fa-image" style="font-size: 32px; margin-bottom: 8px;"></i>
+                    <div>Belum ada gambar</div>
+                </div>
+            `;
+            
+            elements.resultImage.classList.add('hidden');
+            elements.resultPlaceholder.innerHTML = `
+                <i class="fas fa-robot" style="font-size: 32px; margin-bottom: 8px;"></i>
+                <div>Hasil akan muncul di sini</div>
+            `;
+            elements.resultPlaceholder.classList.remove('hidden');
+            
+            elements.downloadSection.classList.add('hidden');
+            clearMessage();
+            updateButtonState();
+        }
+
+        // Event Listeners
+        elements.modeTabs.forEach(tab => {
+            tab.addEventListener('click', () => switchMode(tab.dataset.mode));
+        });
+
+        elements.dropZone.addEventListener('click', () => elements.fileInput.click());
+        elements.fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+            elements.dropZone.addEventListener(event, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        elements.dropZone.addEventListener('dragenter', () => elements.dropZone.classList.add('active'));
+        elements.dropZone.addEventListener('dragover', () => elements.dropZone.classList.add('active'));
+        elements.dropZone.addEventListener('dragleave', () => elements.dropZone.classList.remove('active'));
+        elements.dropZone.addEventListener('drop', (e) => {
+            elements.dropZone.classList.remove('active');
+            handleFileSelect(e.dataTransfer.files[0]);
+        });
+
+        elements.promptInput.addEventListener('input', updateButtonState);
+        elements.aiForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            processGeneration();
+        });
+        elements.downloadBtn.addEventListener('click', downloadImage);
+        elements.shareBtn.addEventListener('click', shareImage);
+        elements.clearBtn.addEventListener('click', clearAll);
+
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                menuToggle.classList.toggle('active');
+            });
+
+            // Initialize
+            switchMode('edit');
+        });
+    </script>
+</body>
+</html>

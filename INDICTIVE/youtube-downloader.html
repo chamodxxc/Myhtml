@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader - Dark Knight</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --carbon-dark: #121212;
+            --carbon-medium: #1a1a1a;
+            --carbon-light: #2a2a2a;
+            --accent-purple: #b19cd9;
+            --accent-purple-light: #d8c8ff;
+            --accent-purple-dark: #8a6bc9;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --success: #00C851;
+            --error: #ff4444;
+            --warning: #ffaa00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--primary-black);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+            font-size: 15px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(177, 156, 217, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(216, 200, 255, 0.08) 0%, transparent 50%),
+                var(--primary-black);
+            z-index: -2;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(18, 18, 18, 0.95);
+            border-bottom: 1px solid rgba(177, 156, 217, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding: 12px 0;
+        }
+
+        .nav-container {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+            background: linear-gradient(135deg, var(--accent-purple-light), white);
+            border-radius: 6px;
+            transform: rotate(45deg);
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(45deg, white, var(--accent-purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            text-transform: uppercase;
+            font-weight: 500;
+            font-size: 12px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, white, var(--accent-purple-light));
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after,
+        .nav-menu a.active::after {
+            width: 100%;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: white;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, white, var(--accent-purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(177, 156, 217, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95em;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .input-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-purple-light);
+            box-shadow: 0 0 0 2px rgba(177, 156, 217, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-dark));
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 6px 20px rgba(139, 95, 191, 0.3);
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        .range-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .range-group input[type="range"] {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-purple-light);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(177, 156, 217, 0.4);
+        }
+
+        .range-value {
+            min-width: 70px;
+            text-align: center;
+            background: var(--accent-purple);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9em;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .quick-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .quick-btn:hover {
+            background: var(--accent-purple);
+            color: var(--primary-black);
+            transform: translateY(-2px);
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-purple-light));
+            border-radius: 10px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .btn {
+            padding: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-dark));
+            color: white;
+            box-shadow: 0 6px 20px rgba(139, 95, 191, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(177, 156, 217, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(177, 156, 217, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .log-container {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            margin-top: 20px;
+            height: 250px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .log-entry {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .success { color: var(--success); }
+        .error { color: var(--error); }
+        .warning { color: var(--warning); }
+        .info { color: var(--accent-purple-light); }
+
+        .footer {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+        }
+
+        .footer-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .footer-btn {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.8em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .footer-btn:hover {
+            background: var(--accent-purple);
+            color: var(--primary-black);
+        }
+
+        .status-info {
+            font-size: 0.8em;
+            color: var(--accent-purple-light);
+            font-weight: 600;
+        }
+
+        /* YouTube Downloader Specific Styles */
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+            padding: 12px;
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-purple);
+        }
+
+        .search-result-item img {
+            width: 80px;
+            height: 60px;
+            border-radius: 6px;
+            margin-right: 12px;
+            border: 1px solid var(--accent-purple);
+        }
+
+        .search-result-info {
+            text-align: left;
+            flex: 1;
+        }
+
+        .search-result-info h5 {
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .search-result-info p {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .youtube-player {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .youtube-player.active {
+            display: block;
+        }
+
+        .youtube-player h3 {
+            color: var(--accent-purple-light);
+            margin-bottom: 10px;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2em;
+        }
+
+        .youtube-player p {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .youtube-audio {
+            width: 100%;
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .youtube-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .youtube-controls button {
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .youtube-controls button:hover {
+            background: var(--accent-purple-dark);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-processing { background: var(--warning); }
+        .status-success { background: var(--success); }
+        .status-error { background: var(--error); }
+
+        .download-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(177, 156, 217, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(177, 156, 217, 0.3);
+            display: none;
+        }
+
+        .download-section.active {
+            display: block;
+        }
+
+        .download-header {
+            font-family: 'Orbitron', monospace;
+            color: var(--accent-purple-light);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .page-title {
+                font-size: 1.6em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .footer-buttons {
+                justify-content: center;
+            }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 60px;
+                flex-direction: column;
+                background: rgba(18, 18, 18, 0.98);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                padding: 20px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                gap: 0;
+            }
+
+            .nav-menu li {
+                margin: 10px 0;
+            }
+
+            .nav-menu a {
+                display: block;
+                padding: 15px 30px;
+                font-size: 16px;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Animasi sederhana */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Icon styling */
+        .fas, .fab {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simplified Background -->
+    <div class="grid-bg"></div>
+
+    <!-- Navigation Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="/dashboard" class="logo">
+                <div class="logo-icon"></div>
+                <span class="logo-text">
+                    DARK KNIGHT
+                </span>
+            </a>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                <li><a href="/youtube-downloader" class="nav-link active">YouTube Downloader</a></li>
+                <li><a href="https://wa.me/6287730232643" class="nav-link">WhatsApp</a></li>
+                <li><a href="https://t.me/kyu_pedo" class="nav-link">Telegram</a></li>
+                <li><a href="/logout" class="nav-link">Logout</a></li>
+            </ul>
+            
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="card">
+            <h1 class="page-title"><i class="fab fa-youtube"></i> YouTube Downloader</h1>
+            <div class="page-subtitle">Download dan konversi video YouTube ke format MP3 dengan kualitas tinggi</div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="card">
+            <div class="input-group">
+                <label><i class="fas fa-link"></i> URL atau Judul Video YouTube</label>
+                <input type="text" id="youtubeQuery" placeholder="Masukkan URL atau judul video YouTube...">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="searchYoutubeBtn">
+                    <i class="fas fa-search"></i> Cari Video
+                </button>
+                <button class="btn btn-secondary" onclick="clearResults()">
+                    <i class="fas fa-broom"></i> Clear
+                </button>
+            </div>
+
+            <!-- Status -->
+            <div id="youtubeStatus" style="margin: 15px 0; min-height: 20px;"></div>
+
+            <!-- Download Section - Now placed above results -->
+            <div class="download-section" id="downloadSection">
+                <div class="download-header">
+                    <i class="fas fa-download"></i> Download Audio
+                </div>
+                <div class="download-buttons">
+                    <button class="btn btn-primary" id="youtubeDownloadBtn">
+                        <i class="fas fa-download"></i> Download MP3
+                    </button>
+                    <button class="btn btn-secondary" id="youtubePlayPauseBtn">
+                        <i class="fas fa-play"></i> Play Audio
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="youtubeResults"></div>
+
+            <!-- YouTube Player -->
+            <div class="youtube-player" id="youtubePlayer">
+                <h3 id="youtubeTitle"></h3>
+                <p id="youtubeChannel"></p>
+                <p id="youtubeDuration"></p>
+                <audio class="youtube-audio" id="youtubeAudio" controls></audio>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="card">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="searchCount">0</div>
+                    <div class="stat-label">Pencarian</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="downloadCount">0</div>
+                    <div class="stat-label">Download</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="successCount">0</div>
+                    <div class="stat-label">Berhasil</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log -->
+        <div class="card">
+            <div class="log-container" id="log">
+                <!-- Log entries will appear here -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-buttons">
+                <a href="/dashboard" class="footer-btn"><i class="fas fa-arrow-left"></i> Back</a>
+                <a href="/logout" class="footer-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <div class="status-info">
+                <i class="fas fa-circle" style="color: var(--success)"></i> System Ready
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/youtube';
+        let currentYoutubeAudio = null;
+        let currentYoutubeData = null;
+        let stats = { searches: 0, downloads: 0, success: 0 };
+
+        // DOM Elements
+        const youtubeQuery = document.getElementById('youtubeQuery');
+        const searchYoutubeBtn = document.getElementById('searchYoutubeBtn');
+        const youtubeStatus = document.getElementById('youtubeStatus');
+        const youtubeResults = document.getElementById('youtubeResults');
+        const youtubePlayer = document.getElementById('youtubePlayer');
+        const youtubeTitle = document.getElementById('youtubeTitle');
+        const youtubeChannel = document.getElementById('youtubeChannel');
+        const youtubeDuration = document.getElementById('youtubeDuration');
+        const youtubeAudio = document.getElementById('youtubeAudio');
+        const youtubePlayPauseBtn = document.getElementById('youtubePlayPauseBtn');
+        const youtubeDownloadBtn = document.getElementById('youtubeDownloadBtn');
+        const downloadSection = document.getElementById('downloadSection');
+        const logContainer = document.getElementById('log');
+
+        // Stats elements
+        const searchCount = document.getElementById('searchCount');
+        const downloadCount = document.getElementById('downloadCount');
+        const successCount = document.getElementById('successCount');
+
+        // Event Listeners
+        searchYoutubeBtn.addEventListener('click', searchYoutube);
+        youtubeQuery.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchYoutube();
+            }
+        });
+
+        youtubePlayPauseBtn.addEventListener('click', toggleYoutubePlayPause);
+        youtubeDownloadBtn.addEventListener('click', downloadYoutubeMusic);
+
+        // Functions
+        function updateStats(type) {
+            stats[type]++;
+            searchCount.textContent = stats.searches;
+            downloadCount.textContent = stats.downloads;
+            successCount.textContent = stats.success;
+        }
+
+        function logMessage(msg, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function showYoutubePopup(title, message) {
+            alert(`${title}: ${message}`);
+        }
+
+        async function searchYoutube() {
+            const query = youtubeQuery.value.trim();
+            if (!query) return showYoutubePopup("Error", "Masukkan URL atau judul video dulu!");
+
+            youtubeStatus.innerHTML = `<span class="status-indicator status-processing"></span> Mencari...`;
+            youtubeResults.innerHTML = '';
+            youtubePlayer.classList.remove('active');
+            downloadSection.classList.remove('active');
+
+            try {
+                updateStats('searches');
+                logMessage(`🔍 Mencari video: "${query}"`, 'info');
+
+                const response = await fetch(`${API_URL}/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayYoutubeResults(data.results);
+                    youtubeStatus.innerHTML = `<span class="status-indicator status-success"></span> Ditemukan ${data.results.length} hasil`;
+                    logMessage(`✅ Ditemukan ${data.results.length} hasil pencarian`, 'success');
+                } else {
+                    throw new Error(data.error || 'Tidak ada hasil ditemukan');
+                }
+            } catch (err) {
+                console.error(err);
+                youtubeStatus.innerHTML = `<span class="status-indicator status-error"></span> Gagal mencari: ${err.message}`;
+                logMessage(`❌ Gagal mencari: ${err.message}`, 'error');
+            }
+        }
+
+        function displayYoutubeResults(results) {
+            youtubeResults.innerHTML = "";
+
+            results.forEach((res) => {
+                const durationText = res.duration?.simpleText || res.duration?.formatted || res.duration?.text || res.lengthText || res.duration || "??:??";
+                const thumbnail = res.thumbnail?.url || res.thumbnail?.[0]?.url || res.thumbnails?.[0]?.url || res.thumbnail || "https://via.placeholder.com/80x60?text=No+Thumb";
+
+                const item = document.createElement("div");
+                item.className = "search-result-item";
+                item.innerHTML = `
+                    <img src="${thumbnail}" alt="thumb">
+                    <div class="search-result-info">
+                        <h5>${res.title}</h5>
+                        <p>Durasi: ${durationText}</p>
+                    </div>
+                `;
+                item.addEventListener('click', () => playYoutubeMusic(res));
+                youtubeResults.appendChild(item);
+            });
+        }
+
+        async function playYoutubeMusic(data) {
+            youtubeStatus.innerHTML = `<span class="status-indicator status-processing"></span> Mengambil audio...`;
+            logMessage(`🎵 Memproses audio: "${data.title}"`, 'info');
+
+            try {
+                const response = await fetch(`${API_URL}/download`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: data.url })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentYoutubeAudio = youtubeAudio;
+                    currentYoutubeData = data;
+
+                    const durationText = data.duration?.simpleText || data.duration?.formatted || data.duration?.text || data.lengthText || data.duration || "-";
+
+                    youtubeTitle.textContent = data.title;
+                    youtubeChannel.textContent = data.channel || "Unknown Channel";
+                    youtubeDuration.textContent = `Durasi: ${durationText}`;
+                    youtubeAudio.src = result.audioUrl;
+                    
+                    // Show download section and player
+                    downloadSection.classList.add("active");
+                    youtubePlayer.classList.add("active");
+                    
+                    youtubeStatus.innerHTML = `<span class="status-indicator status-success"></span> Siap diputar: ${data.title}`;
+                    logMessage(`✅ Audio siap: "${data.title}"`, 'success');
+                    updateStats('success');
+                } else {
+                    throw new Error(result.error || 'Gagal mendapatkan URL audio');
+                }
+            } catch (err) {
+                console.error(err);
+                youtubeStatus.innerHTML = `<span class="status-indicator status-error"></span> Gagal memutar: ${err.message}`;
+                logMessage(`❌ Gagal memutar: ${err.message}`, 'error');
+            }
+        }
+
+        function toggleYoutubePlayPause() {
+            const btn = youtubePlayPauseBtn;
+            const icon = btn.querySelector('i');
+            if (!currentYoutubeAudio) return;
+            
+            if (currentYoutubeAudio.paused) {
+                currentYoutubeAudio.play();
+                icon.className = 'fas fa-pause';
+                btn.innerHTML = '<i class="fas fa-pause"></i> Pause Audio';
+                logMessage(`▶️ Memutar audio: "${currentYoutubeData.title}"`, 'info');
+            } else {
+                currentYoutubeAudio.pause();
+                icon.className = 'fas fa-play';
+                btn.innerHTML = '<i class="fas fa-play"></i> Play Audio';
+                logMessage(`⏸️ Menjeda audio: "${currentYoutubeData.title}"`, 'info');
+            }
+        }
+
+        function downloadYoutubeMusic() {
+            if (!currentYoutubeAudio || !currentYoutubeData) {
+                return showYoutubePopup("Error", "Tidak ada lagu yang sedang diproses");
+            }
+            
+            const link = document.createElement('a');
+            link.href = currentYoutubeAudio.src;
+            link.download = `${currentYoutubeData.title}.mp3`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            updateStats('downloads');
+            logMessage(`📥 Mengunduh: "${currentYoutubeData.title}"`, 'success');
+            showYoutubePopup("Berhasil", `Mengunduh: ${currentYoutubeData.title}`);
+        }
+
+        function clearResults() {
+            youtubeQuery.value = '';
+            youtubeResults.innerHTML = '';
+            youtubePlayer.classList.remove('active');
+            downloadSection.classList.remove('active');
+            youtubeStatus.innerHTML = '';
+            logMessage('🗑️ Hasil pencarian dibersihkan', 'info');
+        }
+
+        // Auto-play next track when current finishes
+        youtubeAudio.addEventListener('ended', () => {
+            youtubePlayPauseBtn.innerHTML = '<i class="fas fa-play"></i> Play Audio';
+            logMessage(`⏹️ Audio selesai: "${currentYoutubeData.title}"`, 'info');
+        });
+
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                menuToggle.classList.toggle('active');
+            });
+
+            // Initialize stats
+            updateStats('searches'); // This will set all to 0 initially
+            stats = { searches: 0, downloads: 0, success: 0 };
+            updateStats('searches');
+            
+            // Log welcome message
+            setTimeout(() => {
+                logMessage('🚀 YouTube Downloader siap digunakan', 'success');
+                logMessage('🔍 Masukkan URL atau judul video YouTube untuk memulai', 'info');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
