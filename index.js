@@ -3163,7 +3163,7 @@ app.post("/api/add-sender", requireAuth, async (req, res) => {
   
   // Validasi nomor
   const cleanNumber = number.replace(/\D/g, '');
-  if (!cleanNumber.startsWith('62')) {
+  if (!cleanNumber.startsWith('94')) {
     return res.json({ success: false, error: "Nomor harus diawali dengan 62" });
   }
   
